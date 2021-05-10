@@ -1,24 +1,30 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-//const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
+// TODO - learn about optimization
 module.exports = {
+    mode: process.env.NODE_ENV || 'production',
+    devtool: 'inline-source-map',
     target: "web",
-    mode: "development",
+
     entry: "./src/index.tsx",
     resolve: {
         extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
     },
     output: {
         path: path.resolve(__dirname, "build"),
-        filename: "bundle.js"
+        filename: "bundle.js",
     },
     module: {
         rules: [
             {
                 test: /\.(ts|tsx)$/,
                 loader: "ts-loader",
+                options: {
+                    configFile: "tsconfig.json",
+                }
             },
             {
                 enforce: "pre",
@@ -36,10 +42,10 @@ module.exports = {
             template: path.resolve(__dirname, "src", "index.html"),
         }),
         new CopyWebpackPlugin({
-            patterns: [
-                { from: 'src/static' }
-            ]
-        })
-        //new MiniCssExtractPlugin({ filename: "./src/yourfile.css"}),
+            patterns: [{
+                from: 'src/static'
+            }]
+        }),
+        //new BundleAnalyzerPlugin()
     ],
 };

@@ -30,9 +30,9 @@ const App: FC = () => {
             bundle: true,
             write: false,
             plugins: [unpkgPathPlugin()],
-            define:{
-                'process.env.NODE_ENV':'"production"',
-                global:'window'
+            define: {
+                'process.env.NODE_ENV': '"production"',
+                global: 'window'
             }
         });
         //console.log(result)
