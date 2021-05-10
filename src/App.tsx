@@ -1,18 +1,51 @@
-import {FC} from "react";
-import Component from "./components/Component";
+import * as esbuild from 'esbuild-wasm'
+import React, {FC, useState, useEffect, useRef} from "react";
+import {unpkgPathPlugin} from "./plugins/unpkg-path-plugin";
 
-import "./styles/main.css"
+const App: FC = () => {
+    const ref = useRef<any>(null)
+    const [input, setInput] = useState('');
+    const [code, setCode] = useState('');
 
-export interface HelloWorldProps {
-    userName: string;
-    lang: string;
-}
+    useEffect(() => {
+        startService();
+    }, []);
 
-const App: FC<HelloWorldProps> = ({userName, lang}) => {
+    const startService = async () => {
+        ref.current = await esbuild.startService({
+            worker: true,
+            wasmURL: '/esbuild.wasm'
+        })
+    }
+
+    const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setInput(e.target.value);
+    }
+
+    const onClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!ref.current) return;
+
+        const result = await ref.current.build({
+            entryPoints: ['index.js'],
+            bundle: true,
+            write: false,
+            plugins: [unpkgPathPlugin()],
+            define:{
+                'process.env.NODE_ENV':'"production"',
+                global:'window'
+            }
+        });
+        //console.log(result)
+
+        setCode(result.outputFiles[0].text);
+    }
+
     return <div>
-        <span className="app-style">Hi {userName} from React! Welcome to {lang} dude!</span>
-        <br/>
-        <Component/>
+        <textarea cols={30} rows={10} onChange={onChange} value={input}/>
+        <div>
+            <button onClick={onClick}>Submit</button>
+        </div>
+        <pre>{code}</pre>
     </div>
 };
 
