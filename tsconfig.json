@@ -14,7 +14,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "./build/",
-    "noImplicitAny": true,
+    //"noImplicitAny": true,
     "sourceMap": true,
     "jsx": "react-jsx",
   },
